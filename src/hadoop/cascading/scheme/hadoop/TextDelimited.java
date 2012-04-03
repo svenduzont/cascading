@@ -25,6 +25,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.mapred.OutputCollector;
+import org.apache.hadoop.mapred.RecordReader;
+
 import cascading.flow.hadoop.HadoopFlowProcess;
 import cascading.scheme.DelimitedParser;
 import cascading.scheme.SinkCall;
@@ -32,9 +36,6 @@ import cascading.scheme.SourceCall;
 import cascading.tap.TapException;
 import cascading.tuple.Fields;
 import cascading.tuple.Tuple;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.mapred.OutputCollector;
-import org.apache.hadoop.mapred.RecordReader;
 
 /**
  * Class TextDelimited is a sub-class of {@link TextLine}. It provides direct support for delimited text files, like
@@ -441,6 +442,11 @@ public class TextDelimited extends TextLine
   @ConstructorProperties({"fields", "sinkCompression", "skipHeader", "delimiter", "strict", "quote", "types", "safe"})
   public TextDelimited( Fields fields, Compress sinkCompression, boolean skipHeader, String delimiter, boolean strict, String quote, Class[] types, boolean safe )
     {
+  		this(fields, sinkCompression, skipHeader, new DelimitedParser( delimiter, quote, types, strict, safe, fields, fields ));
+    }
+  
+  public TextDelimited(Fields fields, Compress sinkCompression, boolean skipHeader, DelimitedParser delimitedParser) 
+  	{
     super( sinkCompression );
 
     // normalizes ALL and UNKNOWN
@@ -449,10 +455,13 @@ public class TextDelimited extends TextLine
 
     this.skipHeader = skipHeader;
 
-    delimitedParser = new DelimitedParser( delimiter, quote, types, strict, safe, getSourceFields(), getSinkFields() );
+    this.delimitedParser = delimitedParser;
     }
+  
+  
 
-  @Override
+
+	@Override
   public boolean source( HadoopFlowProcess flowProcess, SourceCall<Object[], RecordReader> sourceCall ) throws IOException
     {
     Object[] context = sourceCall.getContext();

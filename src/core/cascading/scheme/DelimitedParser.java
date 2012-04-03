@@ -24,13 +24,14 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cascading.tap.TapException;
 import cascading.tuple.Fields;
 import cascading.tuple.Tuple;
 import cascading.tuple.Tuples;
 import cascading.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class DelimitedParser is not to be used directly but by platform specific {@link Scheme} implementations.
@@ -168,7 +169,7 @@ public class DelimitedParser implements Serializable
    * @param numValues    of type int
    * @return String[]
    */
-  public static String[] createSplit( String value, Pattern splitPattern, int numValues )
+  public String[] createSplit( String value, Pattern splitPattern, int numValues )
     {
     return splitPattern.split( value, numValues );
     }
@@ -186,7 +187,7 @@ public class DelimitedParser implements Serializable
    * @param quote         of type String
    * @return Object[] as a convenience
    */
-  public static Object[] cleanSplit( Object[] split, Pattern cleanPattern, Pattern escapePattern, String quote )
+  public Object[] cleanSplit( Object[] split, Pattern cleanPattern, Pattern escapePattern, String quote )
     {
     if( cleanPattern != null )
       {

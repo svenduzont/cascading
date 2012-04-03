@@ -236,9 +236,14 @@ public class TextDelimited extends LocalScheme<LineNumberReader, PrintWriter, Vo
    * @param types      of type Class[]
    * @param safe       of type boolean
    */
-  @ConstructorProperties({"fields", "skipHeader", "delimiter", "strict", "quote", "types", "safe"})
+  @ConstructorProperties({"fields", "sinkCompression", "skipHeader", "delimiter", "strict", "quote", "types", "safe"})
   public TextDelimited( Fields fields, boolean skipHeader, String delimiter, boolean strict, String quote, Class[] types, boolean safe )
     {
+  		this(fields, skipHeader, new DelimitedParser( delimiter, quote, types, strict, safe, fields, fields ));
+    }
+  
+  public TextDelimited(Fields fields, boolean skipHeader, DelimitedParser delimitedParser) 
+  	{
     super( fields, fields );
 
     // normalizes ALL and UNKNOWN
@@ -247,7 +252,7 @@ public class TextDelimited extends LocalScheme<LineNumberReader, PrintWriter, Vo
 
     this.skipHeader = skipHeader;
 
-    delimitedParser = new DelimitedParser( delimiter, quote, types, strict, safe, getSourceFields(), getSinkFields() );
+    this.delimitedParser = delimitedParser;
     }
 
   @Override
